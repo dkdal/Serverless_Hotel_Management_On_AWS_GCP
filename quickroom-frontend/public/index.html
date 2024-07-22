@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link rel="stylesheet" href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css">
+    <script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="Web site created using create-react-app" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <!--
+      manifest.json provides metadata used when your web app is installed on a
+      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+    -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+    <title>React App</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <!--
+      This HTML file is a template.
+      If you open it directly in the browser, you will see an empty page.
+
+      You can add webfonts, meta tags, or analytics to this file.
+      The build step will place the bundled scripts into the <body> tag.
+
+      To begin the development, run `npm start` or `yarn start`.
+      To create a production bundle, use `npm run build` or `yarn build`.
+    -->
+    <!-- Dialogflow Chatbot -->
+    <div id="chatbot-container"></div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        var role = localStorage.getItem("role");
+        var chatbotContainer = document.getElementById("chatbot-container");
+        var chatbotHTML;
+        if (role === "Agent") {
+          chatbotHTML = `
+            <df-messenger
+              location="us-central1"
+              project-id="serverless-data-csci-5410"
+              agent-id="713e2862-3ad4-4da3-8d3f-9ef51ba0ad43"
+              language-code="en"
+              max-query-length="-1">
+              <df-messenger-chat-bubble chat-title="Dal Vacation Chatbot"></df-messenger-chat-bubble>
+            </df-messenger>
+            <style>
+              df-messenger {
+                z-index: 999;
+                position: fixed;
+                --df-messenger-font-color: #000;
+                --df-messenger-font-family: Google Sans;
+                --df-messenger-chat-background: #EEF7EE;
+                --df-messenger-message-user-background: #d3e3fd;
+                --df-messenger-message-bot-background: #fff;
+                bottom: 16px;
+                right: 16px;
+              }
+            </style>
+          `;
+        } else if (role === "Customer") {
+          chatbotHTML = `
+            <df-messenger
+              location="us-central1"
+              project-id="serverless-data-csci-5410"
+              agent-id="2c799646-b149-414a-9d23-6b52d2d3c027"
+              language-code="en"
+              max-query-length="-1">
+              <df-messenger-chat-bubble chat-title="Dal Vacation Chatbot"></df-messenger-chat-bubble>
+            </df-messenger>
+            <style>
+              df-messenger {
+                z-index: 999;
+                position: fixed;
+                --df-messenger-font-color: #000;
+                --df-messenger-font-family: Google Sans;
+                --df-messenger-chat-background: #f3f6fc;
+                --df-messenger-message-user-background: #d3e3fd;
+                --df-messenger-message-bot-background: #fff;
+                bottom: 16px;
+                right: 16px;
+              }
+            </style>
+          `;
+        } else {
+          chatbotHTML = `
+            <df-messenger
+              location="us-central1"
+              project-id="serverless-data-csci-5410"
+              agent-id="543ec2a0-4dbe-48eb-87b5-e1118db4ffd3"
+              language-code="en"
+              max-query-length="-1">
+              <df-messenger-chat-bubble chat-title="Dal Vacation Chatbot"></df-messenger-chat-bubble>
+            </df-messenger>
+            <style>
+              df-messenger {
+                z-index: 999;
+                position: fixed;
+                --df-messenger-font-color: #000;
+                --df-messenger-font-family: Google Sans;
+                --df-messenger-chat-background: #FEF8E6;
+                --df-messenger-message-user-background: #d3e3fd;
+                --df-messenger-message-bot-background: #fff;
+                bottom: 16px;
+                right: 16px;
+              }
+            </style>
+          `;
+        }
+        chatbotContainer.innerHTML = chatbotHTML;
+      });
+    </script>
+  </body>
+</html>

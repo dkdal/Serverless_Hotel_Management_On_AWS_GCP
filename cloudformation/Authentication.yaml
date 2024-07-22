@@ -1,0 +1,240 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  # Customer User Pool
+  CustomerUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: CustomerPool
+      AutoVerifiedAttributes:
+        - email
+      UsernameAttributes:
+        - email
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireUppercase: true
+          RequireLowercase: true
+          RequireNumbers: true
+          RequireSymbols: true
+      Schema:
+        - Name: email
+          AttributeDataType: String
+          Required: true
+          Mutable: true
+      EmailVerificationSubject: "Your verification code"
+      EmailVerificationMessage: "Your verification code is {####}."
+      VerificationMessageTemplate:
+        DefaultEmailOption: CONFIRM_WITH_LINK
+        EmailMessageByLink: "Click the link below to verify your email address: {##Verify Email##}"
+        EmailSubjectByLink: "Verify your email address"
+
+  CustomerUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: AuthpoolforCustomers
+      UserPoolId: !Ref CustomerUserPool
+      GenerateSecret: false
+      ExplicitAuthFlows:
+        - ADMIN_NO_SRP_AUTH
+        - USER_PASSWORD_AUTH
+      SupportedIdentityProviders:
+        - COGNITO
+
+  CustomerUserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      Domain: customer-auth-serverlessgrp33
+      UserPoolId: !Ref CustomerUserPool
+
+  # Agent User Pool
+  AgentUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: AgentPool
+      AutoVerifiedAttributes:
+        - email
+      UsernameAttributes:
+        - email
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireUppercase: true
+          RequireLowercase: true
+          RequireNumbers: true
+          RequireSymbols: true
+      Schema:
+        - Name: email
+          AttributeDataType: String
+          Required: true
+          Mutable: true
+      EmailVerificationSubject: "Your verification code"
+      EmailVerificationMessage: "Your verification code is {####}."
+      VerificationMessageTemplate:
+        DefaultEmailOption: CONFIRM_WITH_LINK
+        EmailMessageByLink: "Click the link below to verify your email address: {##Verify Email##}"
+        EmailSubjectByLink: "Verify your email address"
+
+  AgentUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: AuthpoolforAgents
+      UserPoolId: !Ref AgentUserPool
+      GenerateSecret: false
+      ExplicitAuthFlows:
+        - ADMIN_NO_SRP_AUTH
+        - USER_PASSWORD_AUTH
+      SupportedIdentityProviders:
+        - COGNITO
+
+  AgentUserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      Domain: agent-auth-serverlessgrp33
+      UserPoolId: !Ref AgentUserPool
+
+  CustomerInformationTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: Customer_Information
+      AttributeDefinitions:
+        - AttributeName: email
+          AttributeType: S
+      KeySchema:
+        - AttributeName: email
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+
+  AgentInformationTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: Agent_Information
+      AttributeDefinitions:
+        - AttributeName: email
+          AttributeType: S
+      KeySchema:
+        - AttributeName: email
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  
+  AuthenticationApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: AuthenticationGateway
+      Description: API for authentication (signup/signin)
+
+   
+
+  # /signin endpoint
+  SigninResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt AuthenticationApi.RootResourceId
+      PathPart: "signin"
+      RestApiId: !Ref AuthenticationApi
+
+  SigninFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: signinFunction
+      Code:
+        S3Bucket: serverless-project-lambda
+        S3Key: Login.zip
+      Handler: lambda_function.lambda_handler
+      Role: arn:aws:iam::975050059686:role/LabRole
+      Runtime: python3.9
+      Timeout: 30
+      MemorySize: 128
+
+  SigninPostMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: POST
+      ResourceId: !Ref SigninResource
+      RestApiId: !Ref AuthenticationApi
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri: !Sub arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/${SigninFunction.Arn}/invocations
+        IntegrationResponses:
+          - StatusCode: 200
+            ResponseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+      MethodResponses:
+        - StatusCode: '200'
+          ResponseModels:
+            application/json: "Empty"
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Origin: true
+    
+  LambdaApiGatewayPermissionPostForSignin:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt SigninFunction.Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub arn:aws:execute-api:us-east-1:${AWS::AccountId}:${AuthenticationApi}/*/POST/signin
+
+  AuthenticationApiDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn:
+      - SigninPostMethod
+    Properties:
+      RestApiId: !Ref AuthenticationApi
+      StageName: prod
+
+  # CORS Configuration for AuthenticationApi
+  AuthenticationApiRootMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref AuthenticationApi
+      ResourceId: !GetAtt AuthenticationApi.RootResourceId
+      HttpMethod: OPTIONS
+      AuthorizationType: NONE
+      Integration:
+        Type: MOCK
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        IntegrationResponses:
+          - StatusCode: 200
+            ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+              method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            ResponseTemplates:
+              application/json: ""
+      MethodResponses:
+        - StatusCode: 200
+          ResponseModels:
+            application/json: "Empty"
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+  
+
+Outputs:
+  CustomerUserPoolId:
+    Description: The Customer User Pool ID
+    Value: !Ref CustomerUserPool
+
+  CustomerUserPoolClientId:
+    Description: The Customer User Pool Client ID
+    Value: !Ref CustomerUserPoolClient
+
+  AgentUserPoolId:
+    Description: The Agent User Pool ID
+    Value: !Ref AgentUserPool
+
+  AgentUserPoolClientId:
+    Description: The Agent User Pool Client ID
+    Value: !Ref AgentUserPoolClient
+
+  AuthenticationApiPublicEndpoint:
+    Description: "Endpoint for Authentication API"
+    Value: !Sub "https://${AuthenticationApi}.execute-api.us-east-1.amazonaws.com/prod" 
+
