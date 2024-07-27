@@ -10,6 +10,7 @@
   background-color: #fff;
   display: flex;
   flex-direction: column;
+  transition: transform 0.3s ease; /* Smooth transition for minimize effect */
 }
 
 .messagesContainer {
@@ -23,7 +24,8 @@
   padding: 10px;
   border-radius: 5px;
   max-width: 80%;
-  display: inline-block;
+  display: block; /* Ensure each message takes a new line */
+  word-break: break-word; /* Ensure long words break and wrap */
 }
 
 .sent {
@@ -37,10 +39,12 @@
   background-color: #f1f1f1;
   color: #000;
   align-self: flex-start;
+  text-align: left;
 }
 
 .message {
   font-size: 14px;
+  white-space: pre-wrap; /* Preserve whitespace and new lines */
 }
 
 .timestamp {
@@ -70,4 +74,28 @@
   color: #fff;
   border: none;
   cursor: pointer;
+}
+
+.minimizeButton {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.openButton {
+  position: fixed;
+  bottom: 10px; /* Move button to the bottom */
+  left: 10px;   /* Move button to the left */
+  width: 100px;
+  height: 40px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  z-index: 1000; /* Ensure button is above other content */
 }
