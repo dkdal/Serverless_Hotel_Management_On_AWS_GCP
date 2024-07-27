@@ -11,7 +11,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import axios from 'axios';
 import  { getUserPool } from '../../UserPool';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 
 export default function Signup() {
@@ -25,6 +25,7 @@ export default function Signup() {
     cipherKey: 1,
     userType: 'customer'
   });
+  const navigate = useNavigate()
 
   const securityQuestions = [
     "What was the name of your first pet?",
@@ -83,6 +84,7 @@ export default function Signup() {
               }
             );
             alert('Verify your email to login successfully and registration email has also been sent')
+            navigate('/login')
           } else {
             alert('Error storing user details');
           }

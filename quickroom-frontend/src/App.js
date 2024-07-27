@@ -8,6 +8,8 @@ import Rooms from "./Components/Rooms/Rooms";
 import AllReviews from "./Components/AllReviews/AllReviews";
 import Dashboard from "./Components/Dashboard/Dashboard";
 import BookingForm from "./Components/BookingForm/BookingForm"
+import ManageRooms from "./Components/ManageRooms/ManageRooms";
+import LiveChatBotWindow from "./Components/LiveChatBotWindow/LiveChatBotWindow";
 
 
 function App() {
@@ -26,8 +28,10 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />}></Route>
           <Route path="/register" element={<Signup />} />
           <Route path="/bookings" element={<BookingForm />} />
+          <Route path="/managerooms" element={<ManageRooms />} />
         </Routes>
       </Router>
+      <LiveChatBotWindow></LiveChatBotWindow>
     </div>
   );
 }

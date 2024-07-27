@@ -14,8 +14,8 @@ import MenuItem from '@mui/material/MenuItem';
 import bookingLogo from '../../bookingcom.svg';
 import { useNavigate } from 'react-router-dom';
 
-const pages = ['Rooms', 'Reviews', 'Feedback'];
-const settings = ['Dashboard', 'Logout'];
+const pages = ['Rooms', 'Reviews', 'Feedback', 'Book Room'];
+const settings = ['Dashboard', 'ManageRooms', 'Logout'];
 
 function Navbar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -46,6 +46,8 @@ function Navbar() {
     setAnchorElUser(null);
     if (setting === 'Dashboard') {
       navigate("/dashboard");
+    } else if (setting === 'ManageRooms') {
+      navigate("/managerooms");
     } else if (setting === 'Logout') {
       handleLogout(); 
       navigate("/");
@@ -58,11 +60,13 @@ function Navbar() {
 
   const handlePageClick = (page) => {
     if (page === 'Rooms') {
-        navigate("/rooms");
+      navigate("/rooms");
     } else if (page === 'Reviews') {
       navigate("/reviews");
-    } else if(page === 'Feedback'){
-      navigate("/feedback")
+    } else if (page === 'Feedback') {
+      navigate("/feedback");
+    } else if (page === 'Book Room') {
+      navigate("/bookings")
     }
   };
 

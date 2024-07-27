@@ -43,7 +43,7 @@ def send_notification(email, success, reference_code):
     payload = {
         "email": email,
         "success": success,
-        "reference_code": reference_code
+        "reference_code": reference_code  # Ensure reference_code is included
     }
     encoded_payload = json.dumps(payload).encode('utf-8')
     try:
@@ -66,12 +66,15 @@ def lambda_handler(event, context):
         logger.info(f"Parsed booking request: {json.dumps(booking_request)}")
 
         # Extract booking details
-        room_id = booking_request['room_id']
         user_id = booking_request['user_id']
-        start_date = booking_request['start_date']
-        end_date = booking_request['end_date']
+        booking_id = booking_request['booking_id']
+        first_name = booking_request['first_name']
+        last_name = booking_request['last_name']
+        room_id = booking_request['room_number']
+        start_date = booking_request['check_in_date']
+        end_date = booking_request['check_out_date']
 
-        # Generate a unique reference code for the booking
+        # Generate a unique reference code for this booking
         reference_code = str(uuid.uuid4())
 
         # Convert dates to datetime objects for comparison
@@ -96,7 +99,6 @@ def lambda_handler(event, context):
                 'body': json.dumps(f"Error: {str(e)}")
             }
 
-        # To-Do
         # Check for user existence and access permissions, if applicable
 
         if approved:
@@ -105,8 +107,11 @@ def lambda_handler(event, context):
                 response = dynamodb_client.put_item(
                     TableName=table_name,
                     Item={
-                        'room_id': {'S': room_id},
+                        'booking_id': {'S': booking_id},
                         'user_id': {'S': user_id},
+                        'first_name': {'S': first_name},
+                        'last_name': {'S': last_name},
+                        'room_id': {'S': room_id},
                         'start_date': {'S': start_date},
                         'end_date': {'S': end_date},
                         'status': {'S': 'approved'},

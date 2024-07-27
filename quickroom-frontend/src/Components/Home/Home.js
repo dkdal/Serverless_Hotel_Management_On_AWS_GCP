@@ -3,6 +3,7 @@ import Navbar from '../Navbar/Navbar';
 import Box from '@mui/material/Box';
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
+import Typography from '@mui/material/Typography';
 
 export default function Home() {
 
@@ -19,8 +20,14 @@ export default function Home() {
   return (
     <>
     <Navbar></Navbar>
-    {email ? <p>Email: {email}</p> : <p>User is not logged in</p>}
-    {role ? <p>Role: {role}</p> : <p>Role not available</p>}
+    <Box sx={{ width: 'auto', height: 'auto', padding: 2, bgcolor: '#f5f5f5', borderRadius: 2}}>
+        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: '#3f51b5' }}>
+          Dal Vacation Home
+        </Typography>
+        <Typography variant="body1" paragraph sx={{ fontSize: '1.1rem', color: '#555' }}>
+          Welcome to Dal Vacation Home, your perfect getaway destination! Whether you're looking to book a room for a relaxing vacation or a productive business trip, we offer a range of accommodations to suit your needs. Enjoy a comfortable stay with us, featuring well-appointed rooms and top-notch amenities. Book your room today and experience the best of hospitality.
+        </Typography>
+      </Box>
     <Box sx={{ width: 'auto', height: 'auto' }}>
       <ImageList variant="masonry" cols={3} gap={8}>
         {itemData.map((item) => (

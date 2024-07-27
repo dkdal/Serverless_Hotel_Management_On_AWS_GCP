@@ -45,7 +45,7 @@
         var role = localStorage.getItem("role");
         var chatbotContainer = document.getElementById("chatbot-container");
         var chatbotHTML;
-        if (role === "Agent") {
+        if (role === "agent") {
           chatbotHTML = `
             <df-messenger
               location="us-central1"
@@ -69,7 +69,7 @@
               }
             </style>
           `;
-        } else if (role === "Customer") {
+        } else if (role === "customer") {
           chatbotHTML = `
             <df-messenger
               location="us-central1"
