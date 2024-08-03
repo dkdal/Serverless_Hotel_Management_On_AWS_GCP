@@ -2,7 +2,6 @@ import json
 import boto3
 import logging
 import urllib3
-import uuid
 from datetime import datetime
 
 logger = logging.getLogger()
@@ -75,7 +74,7 @@ def lambda_handler(event, context):
         end_date = booking_request['check_out_date']
 
         # Generate a unique reference code for this booking
-        reference_code = str(uuid.uuid4())
+        reference_code = booking_id
 
         # Convert dates to datetime objects for comparison
         start_date_obj = datetime.strptime(start_date, '%Y-%m-%d')

@@ -48,3 +48,4 @@ def create_user_document(request):
     except Exception as e:
         error_message = f"An error occurred: {str(e)}"
         return (json.dumps(error_message), 500, headers)
+

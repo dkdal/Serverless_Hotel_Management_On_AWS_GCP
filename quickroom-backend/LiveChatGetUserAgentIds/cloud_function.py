@@ -95,3 +95,4 @@ def get_user_agent_ids(request):
             'Access-Control-Allow-Methods': 'POST, OPTIONS',
             'Access-Control-Allow-Headers': 'Content-Type'
         }
+
